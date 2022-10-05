@@ -1,0 +1,6 @@
+Antonio Díaz Pérez y Jesús Escribano Serena
+----------------------------------------------
+· El cliente está totalmente implementado, establece la comunicación con el servidor y le envía los mensajes que recoge el servidor.
+· El servidor es capaz de establecer conexión con el cliente y permite a múltiples cliente
+· El servidor contiene la comprobación de si el cliente que estamos usando es uno anterior o uno nuevo
+
