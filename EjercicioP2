@@ -1,0 +1,65 @@
+EJERCICIO PRÁCTICA
+
+4 en raya, dos jugadores y se pueden rellenar las fichas en horizontal, vertical y diagonal.
+
+Servidor:
+· Inicia una cuadrícula vacía
+· Comprobará si alguno de los jugadores ha juntado las 4
+· Termina el juego si alguien gana o si ya no quedan más opciones posibles
+· Solamente se admitirán 2 jugadores por partida y 10 partidas simultáneas
+· Cuando un cliente se conecta se le devuelve al usuario "+Ok. Usuario conectado"
+· Se comprobará que el usuario sea correcto y se enviará "+Ok. Usuario correcto" o "-Err. Usuario incorrecto" según proceda
+· Se comprueba que el password sea correcto y se envía "+Ok. Usuario validado" o "-Err. Error en la validación"
+· Un usuario se puede registrar y se debe comprobar el sistema para que no haya otro de igual nombre
+· Al recibir un inicio de partida, comprueba las personas que están esperando para una partida y le asigna una pareja enviando un mensaje a ambos, si no hay nadie se envía un mensaje de ("+Ok. Esperando jugadores")
+· El inicio de la partida se indica con "+Ok. Comienza la partida,
+-------
+-------
+-------
+-------
+-------
+-------
+-------"
+· El jugador1 juega primero
+· El servidor envía un mensaje a cada uno cuando sea su turno y pone "Ok. Turno de partida"
+· Comprobaciones al colocar una ficha
+	- Si el hueco está lleno, se le envía al cliente un mensaje que diga "-Err. Debe seleccionar otra columna que tenga alguna casilla disponible" y se le vuelve a dar la opción de introducir otra columna.
+	- Si hay hueco se le envía a cada jugador el mensaje "+Ok. Nuevo tablero (+info tablero actualizada)" 
+		* En cada jugado se comprueba si alguien ha ganado y si fuera se indica con "+Ok. Jugador <nombre> ha ganado la partido". Si se ve que no se pueden insertar más fichas se pone "+Ok. Se ha producido un empate en la partida"
+· Si llega un mensaje de jugar cuando no es su turno se dira: "-Err. Debe esperar su turno"
+· Si un cliente sale y estaba en partida se avisa a su oponente con "Ok. Tu oponente ha salido de la partida" y si estaba en espera o solamente conectado se desconecta del sistema
+· Cualquier mensaje que no adapte a lo especificado, recibirá "-Err. Texto Informativo"
+· Cadenas de caracteres máxima de 250 caracteres.
+· El servidor acepta servicios en el puerto 2060 ¿2050?.
+· Se deben permitir varios clientes con select()
+· Número máximo de clientes=> 30
+· Todos los mensajes de éxito irán precedidos por "+Ok. Texto informativo" y los de error con "-Err. Texto informativo"
+
+----------------------
+Cliente:
+· Coloca fichas
+· Enviará su usuario al servidor (de la forma USUARIO user)
+· Enviará su contraseña al servidor (de la forma PASSWORD password)
+· Se podrá registrar un usuario con "REGISTRO -u usuario -p password)
+· Escribe "INICIAR-PARTIDA" para que esta sea iniciada
+· Envía COLOCAR-FIHCA columna y se coloca una ficha en la columna indica (hueco de más arriba)
+· Para salir del servicio, escribimos SALIR
+
+
+
+
+NOTACIÓN: -=> casilla vacía | o -> casilla marcada por el jugador1 (primero que inició la conexión) | x => casilla marcada por el jugador2
+
+Tablero:
+		1 2 3 4 5 6 7 
+	1
+	2
+	3
+	4
+	5
+	6
+	
+	
+
+
+
