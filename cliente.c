@@ -9,6 +9,10 @@
 #include <time.h>
 #include <arpa/inet.h>
 
+bool user = false;
+bool password = false;
+bool playing = false;
+
 
 int main (){
   
@@ -60,13 +64,12 @@ int main (){
     FD_SET(0,&readfds);
     FD_SET(sd,&readfds);
 
-    printf("Utilize estos comandos: \n");
-		printf("\tUSUARIO <usuario>: Introducir su usuario.\n");
-		printf("\tPASSWORD <contraseña>: Introducir contraseña del usuario.\n");
-		printf("\tREGISTRO –u <usuario> –p <password>: Para registrarse en la base de datos.\n");
-		printf("\tINICIAR-PARTIDA: Para solicitar jugar una partida de hundir la flota.\n");
-		printf("\tCOLOCAR-FICHA: Indicar la columna donde se coloca la ficha.\n");
-		printf("\tSALIR: Salir del juego.\n");
+	printf("Bienvenido al juego '4 en linea'.\n");
+	printf("Una vez se haya conectado al servidor introduzca:\n");
+	printf("\tPara registrarse en la aplicación por primera vez: \n");
+	printf("\t\tREGISTRO -u suNombre -p suContraseña\n");
+	printf("\tPara iniciar sesión: \n");
+	printf("\t\tUSUARIO usuario\n");
 		
 
 	/* ------------------------------------------------------------------
@@ -80,17 +83,44 @@ int main (){
         
         //Tengo mensaje desde el servidor
         if(FD_ISSET(sd, &auxfds)){
-
+            
             bzero(buffer,sizeof(buffer));
             recv(sd,buffer,sizeof(buffer),0);
             
-            printf("ControlBuffer -> %s\n",buffer);
+            printf("\n%s\n",buffer);
             
-            if(strcmp(buffer,"Demasiados clientes conectados\n") == 0)
+            if(strcmp(buffer,"-ERR. Demasiados clientes conectados\n") == 0)
                 fin =1;
             
-            if(strcmp(buffer,"Desconexión servidor\n") == 0)
+            if(strcmp(buffer,"-EE. Desconectado por el servidor\n") == 0)
                 fin =1;
+
+			if(strcmp(buffer, "+Ok. Usuario correcto\n") == 0){
+				user = true;
+				printf("Introduzca ahora su contraseña asi:\n\tPASSWORD suContraseña\n");
+			}
+
+			if(strcmp(buffer, "+Ok. Usuario validado\n") == 0){
+				password = true;
+				clear();
+				printf("Para empezar a jugar introduzca:\n");
+				printf("\tINICIAR-PARTIDA\n");
+				printf("Para salir introduzca:\n");
+				printf("\tSALIR\n");
+			}
+
+			if(strcmp(buffer, "+Ok. Empieza la partida.", strlen("+Ok. Empieza la partida.")) == 0){
+				playing = true;
+				/********************************************************/
+				/*						Completar						*/
+				/********************************************************/
+				if(myTurn == true){
+					printf("+Ok. Turno de partida.\n");
+				}
+				else if(myTurn == false){
+					printf("Ok. Turno del otro jugador.\n");
+				}
+			}
             
         }
         else{
@@ -99,7 +129,7 @@ int main (){
            	if(FD_ISSET(0,&auxfds)){
 
             	bzero(buffer,sizeof(buffer));
-
+                
             	fgets(buffer,sizeof(buffer),stdin);
                 
         		if(strcmp(buffer,"SALIR\n") == 0){
