@@ -80,11 +80,11 @@ int main (){
         
         //Tengo mensaje desde el servidor
         if(FD_ISSET(sd, &auxfds)){
-            
+
             bzero(buffer,sizeof(buffer));
             recv(sd,buffer,sizeof(buffer),0);
             
-            printf("\n%s\n",buffer);
+            printf("ControlBuffer -> %s\n",buffer);
             
             if(strcmp(buffer,"Demasiados clientes conectados\n") == 0)
                 fin =1;
@@ -96,19 +96,20 @@ int main (){
         else{
             
             //He introducido información por teclado
-           /* if(FD_ISSET(0,&auxfds)){
-                bzero(buffer,sizeof(buffer));
+           	if(FD_ISSET(0,&auxfds)){
+
+            	bzero(buffer,sizeof(buffer));
+
+            	fgets(buffer,sizeof(buffer),stdin);
                 
-                fgets(buffer,sizeof(buffer),stdin);
+        		if(strcmp(buffer,"SALIR\n") == 0){
+                	fin = 1;
+        		}
                 
-                if(strcmp(buffer,"SALIR\n") == 0){
-                    fin = 1;
-                }
-                
-                send(sd,buffer,sizeof(buffer),0);
+            	send(sd,buffer,sizeof(buffer),0);
                 
             }
-            */
+            
             
         }
         
