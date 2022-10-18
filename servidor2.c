@@ -39,7 +39,7 @@ int main ( ){
     struct cliente clients[MAX_CLIENTS];
     int salida;
     int numClientes = 0;
-    // //contadores
+    //contadores
     int i,j,k;
 	int recibidos;
     char identificador[MSG_SIZE];
@@ -120,6 +120,7 @@ int main ( ){
                     // Si encontramos el Socket
                     if(FD_ISSET(i, &auxfds)) {
                         
+                        // El usuario es nuevo
                         if( i == sd){
                             
                             if((new_sd = accept(sd, (struct sockaddr *)&from, &from_len)) == -1){
