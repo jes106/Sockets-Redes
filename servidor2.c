@@ -12,6 +12,8 @@
 
 #include "struct4.h"
 
+#include "AuxiliaryFunctions.c"
+
 
 #define MSG_SIZE 200
 #define MAX_CLIENTS 30
@@ -136,20 +138,14 @@ int main ( ){
                                     FD_SET(new_sd,&readfds);
 
                                     bzero(buffer, sizeof(buffer));
-                                    strcpy(buffer, "Bienvenido al Sistema\n Identifiquese con USUARIO + username registrado: ");
+                                    strcpy(buffer, "+Ok. Usuario conectado.\n");
                                 
                                     send(new_sd,buffer,sizeof(buffer),0);
-                                
-                                    for(j=0; j<(numClientes-1);j++){
-                                        bzero(buffer,sizeof(buffer));
-                                        sprintf(buffer, "Nuevo Cliente conectado: %d\n",new_sd);
-                                        send(clients[j].socket,buffer,sizeof(buffer),0);
-                                    }
                                 }
                                 else
                                 {
                                     bzero(buffer,sizeof(buffer));
-                                    strcpy(buffer,"Demasiados clientes conectados\n");
+                                    strcpy(buffer,"-Err. Demasiados clientes conectados\n");
                                     send(new_sd,buffer,sizeof(buffer),0);
                                     close(new_sd);
                                 }
@@ -158,6 +154,8 @@ int main ( ){
                             
                             
                         }
+                        
+                        
                         // Si se ha introducido información de teclado
                         else if (i == 0){
 
@@ -181,6 +179,8 @@ int main ( ){
                             //Mensajes que se quieran mandar a los clientes (implementar)
                             
                         } 
+                        
+                        
                         else{
 
                             bzero(buffer,sizeof(buffer));
@@ -190,10 +190,63 @@ int main ( ){
                             if(recibidos > 0){
                                 
                                 if(strcmp(buffer,"SALIR\n") == 0){
-                                    
-                                    salirCliente(i,&readfds,&numClientes,clients);
-                                    
+                                    salirCliente(i,&readfds,&numClientes,clients);  
                                 }
+                                
+                                else if(strcmp(buffer, "USUARIO ", strlen("USUARIO "))== 0){
+
+                                    if(strcmp(buffer, "USUARIO \n", strlen("USUARIO \n"))== 0){
+                                        strcpy(buffer, "-Err. Usuario incorecto\n");
+                                        send(i, buffer, sizeof(buffer), 0);
+                                    }
+                                    else{
+                                        char *usu;
+                                        usu = strtok(buffer, " ");
+                                        usu = strtok(NULL, "\n");   //Hasta aqui hemos extraido el nombre de usuario de la cadena
+
+                                        //Comprobamos que el nombre existe en la base de datos
+                                        if(UserCheck(usu) == true){
+                                            bzero(buffer, sizeof(buffer));
+                                            strcpy(buffer, "+Ok. Usuario correcto\n");
+                                            send(i, buffer, sizeof(buffer), 0);
+                                        }
+                                        else{   //UserCheck(usu) == false
+                                            bzero(buffer, sizeof(buffer));
+                                            strcpy(buffer, "-Err. Usuario incorecto\n");
+                                            send(i, buffer, sizeof(buffer), 0);
+                                        }
+                                    }
+
+
+                                }                            
+                                
+                                else if(strcmp(buffer, "PASSWORD ", strlen("PASSWORD "))== 0){
+
+                                    if(strcmp(buffer, "PASSWORD \n", strlen("PASSWORD \n"))== 0){
+                                        strcpy(buffer, "-Err. Error en la validacion\n");
+                                        send(i, buffer, sizeof(buffer), 0);
+                                    }
+                                    else{
+                                        char *pass;
+                                        pass = strtok(buffer, " ");
+                                        pass = strtok(NULL, "\n");   //Hasta aqui hemos extraido la constraseña de la cadena
+
+                                        //Comprobamos que el nombre existe en la base de datos
+                                        if(PasswordCheck(pass) == true){
+                                            bzero(buffer, sizeof(buffer));
+                                            strcpy(buffer, "+Ok. Usuario validado\n");
+                                            send(i, buffer, sizeof(buffer), 0);
+                                        }
+                                        else{   //PasswordCheck(pass) == false
+                                            bzero(buffer, sizeof(buffer));
+                                            strcpy(buffer, "-Err. Error en la validacion\n");
+                                            send(i, buffer, sizeof(buffer), 0);
+                                        }
+                                    }
+
+
+                                }
+
                                 else{
                                     
                                     sprintf(identificador,"<%d>: %s",i,buffer);
