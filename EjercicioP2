@@ -68,7 +68,7 @@ Tablero:
 	+Ok. Usuario conectado			-->		Cliente se conecta al servicio (Conexion correcta)
 USUARIO usuario
 	+Ok. Usuario correcto			-->		El usuario esta en la base de datos
-	+-Err. Usuario incorecto		-->		El usuario no esta en la base de datos
+	-Err. Usuario incorecto		-->		El usuario no esta en la base de datos
 PASSWORD password
 	+Ok. Usuario validado			--> Password correcta
 	-Err. Error en la validacion	--> Password incorrecta
@@ -87,6 +87,4 @@ COLOCA-FICHA numero
 	-Err. Texto informativo
 
 	-Err
-
-
 
