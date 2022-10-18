@@ -89,15 +89,14 @@ int main (){
             
             printf("\n%s\n",buffer);
             
-            if(strcmp(buffer,"-ERR. Demasiados clientes conectados\n") == 0)
-                fin =1;
-            
-            if(strcmp(buffer,"-EE. Desconectado por el servidor\n") == 0)
-                fin =1;
-
 			if(strcmp(buffer, "+Ok. Usuario correcto\n") == 0){
 				user = true;
 				printf("Introduzca ahora su contraseña asi:\n\tPASSWORD suContraseña\n");
+			}
+
+			if(strcmp(buffer, "-Err. Usuario incorecto") == 0){
+				user = false;
+				printf("Introduzca un usuario existente en la base de datos o registrese.\n");
 			}
 
 			if(strcmp(buffer, "+Ok. Usuario validado\n") == 0){
@@ -107,6 +106,19 @@ int main (){
 				printf("\tINICIAR-PARTIDA\n");
 				printf("Para salir introduzca:\n");
 				printf("\tSALIR\n");
+			}
+
+			if(strcmp(buffer, "-Err. Error en la validacion\n") == 0){
+				password = false;
+				printf("Contraseña incorrecta.\n");
+			}
+
+            if(strcmp(buffer,"-ERR. Demasiados clientes conectados\n") == 0){
+				fin =1;
+			}
+
+            if(strcmp(buffer,"-EE. Desconectado por el servidor\n") == 0){
+                fin =1;
 			}
 
 			if(strcmp(buffer, "+Ok. Empieza la partida.", strlen("+Ok. Empieza la partida.")) == 0){
@@ -132,19 +144,52 @@ int main (){
                 
             	fgets(buffer,sizeof(buffer),stdin);
                 
+				if(strcmp(buffer, "USUARIO", strlen("USUARIO")) == 0 && user = true){
+					printf("-Err. Ya ha iniciado sesion.\n");
+				}
+
+				else if(strncmp(buffer, "PASSWORD", strlen("PASSWORD")) == 0)&& user == false){
+               		printf("-Err. No puede introducir la contraseña antes que el nombre de usuario\n");
+            	}
+
+            	else if(strncmp(buffer, "PASSWORD", strlen("PASSWORD")) == 0 && password == true){
+               		printf("-Err. Ya ha iniciado sesión\n");
+            	}
+
+				else if(strncmp(buffer, "REGISTRO", strlen("REGISTRO")) == 0 && user == true){
+               		printf("-Err. Ya está registrado\n");
+            	}
+
+				else if(strncmp(buffer, "INICIAR-PARTIDA\n") == 0 && password = false){
+               		printf("-Err. No puede iniciar partida antes de iniciar sesión\n");
+            	}
+
+				else if(strcmp(buffer, "INICIAR-PARTIDA\n") == 0 && playing == true){
+               		printf("-Err. No puede volver a iniciar partida\n");
+            	}
+
+				else if(strcmo(buffer, "COLOCAR-FICHA\n") == 0 && (playing == false || myTurn == false)){
+					if(playing == false){
+						printf("-Err. Debe estar en una partida para colocar una ficha.\n");
+					}
+					else if(myTurn == false){
+						printf("-Err. Debe esperar a su turno para colocar una ficha.\n");
+					}
+				}
+
+				else{
+					send(sd, buffer, sizeof(buffer), 0);
+				}
+
+				/*
         		if(strcmp(buffer,"SALIR\n") == 0){
                 	fin = 1;
-        		}
-                
-            	send(sd,buffer,sizeof(buffer),0);
+        		}*/
                 
             }
-            
-            
+             
         }
-        
-        
-				
+        		
     }while(fin == 0);
 		
     close(sd);
