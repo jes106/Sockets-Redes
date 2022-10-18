@@ -113,11 +113,11 @@ int main (){
 				printf("Contraseña incorrecta.\n");
 			}
 
-            if(strcmp(buffer,"-ERR. Demasiados clientes conectados\n") == 0){
+            if(strcmp(buffer,"-Err. Demasiados clientes conectados\n") == 0){
 				fin =1;
 			}
 
-            if(strcmp(buffer,"-EE. Desconectado por el servidor\n") == 0){
+            if(strcmp(buffer,"-Err. Desconectado por el servidor\n") == 0){
                 fin =1;
 			}
 
