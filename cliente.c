@@ -67,8 +67,7 @@ int main (){
 		printf("\tINICIAR-PARTIDA: Para solicitar jugar una partida de hundir la flota.\n");
 		printf("\tCOLOCAR-FICHA: Indicar la columna donde se coloca la ficha.\n");
 		printf("\tSALIR: Salir del juego.\n");
-		printf("\tCualquier otro tipo de mensaje que se envíe al servidor, no será reconocida por el protocolo como un mensaje válido y generará su correspondiente “-Err.” por parte del servidor.");
-
+		
 
 	/* ------------------------------------------------------------------
 		Se transmite la información
@@ -97,7 +96,7 @@ int main (){
         else{
             
             //He introducido información por teclado
-            if(FD_ISSET(0,&auxfds)){
+           /* if(FD_ISSET(0,&auxfds)){
                 bzero(buffer,sizeof(buffer));
                 
                 fgets(buffer,sizeof(buffer),stdin);
@@ -109,7 +108,7 @@ int main (){
                 send(sd,buffer,sizeof(buffer),0);
                 
             }
-            
+            */
             
         }
         
