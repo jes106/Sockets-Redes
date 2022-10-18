@@ -59,7 +59,34 @@ Tablero:
 	5
 	6
 	
-	
+
+
+
+|-------------------------------------------------------------------------------------------------------|
+| 											Tipos de Mesajes											|
+|-------------------------------------------------------------------------------------------------------|
+	+Ok. Usuario conectado			-->		Cliente se conecta al servicio (Conexion correcta)
+USUARIO usuario
+	+Ok. Usuario correcto			-->		El usuario esta en la base de datos
+	+-Err. Usuario incorecto		-->		El usuario no esta en la base de datos
+PASSWORD password
+	+Ok. Usuario validado			--> Password correcta
+	-Err. Error en la validacion	--> Password incorrecta
+REGISTRO -u usuario -p password
+INICIA-PARTIDA
+	+Ok. Esperando jugadores
+	+Ok. Empieza la partida [tablero]
+	+Ok. Turno de partida
+COLOCA-FICHA numero
+	-Err. Debe seleccionar otra columna que tenga alguna casilla disponible
+	+Ok. Nuevo tablero [tablero]
+	+Ok <nombreJugador> ha ganado la partida
+	+Ok. Se ha producido un empare en la partida
+	-Err. Debe esperar su turno
+	+Ok. Tu oponente ha salido de la partida
+	-Err. Texto informativo
+
+	-Err
 
 
 
