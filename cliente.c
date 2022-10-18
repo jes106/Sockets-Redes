@@ -91,10 +91,10 @@ int main (){
             
 			if(strcmp(buffer, "+Ok. Usuario correcto\n") == 0){
 				user = true;
-				printf("Introduzca ahora su contraseña asi:\n\tPASSWORD suContraseña\n");
+				printf("Introduzca ahora su contraseña asi:\n\tPASSWORD password\n");
 			}
 
-			if(strcmp(buffer, "-Err. Usuario incorecto") == 0){
+			if(strcmp(buffer, "-Err. Usuario incorecto\n") == 0){
 				user = false;
 				printf("Introduzca un usuario existente en la base de datos o registrese.\n");
 			}
