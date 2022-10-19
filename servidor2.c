@@ -5,7 +5,7 @@
 #include <netdb.h>
 #include <stdlib.h>
 #include <string.h>
-#include<signal.h>
+#include <signal.h>
 #include <unistd.h>
 #include <time.h>
 #include <arpa/inet.h>
@@ -25,6 +25,7 @@
 
 void manejador(int signum);
 void salirCliente(int socket, fd_set * readfds, int * numClientes, struct cliente clients[]);
+void comprobarEstado(char cadena[MSG_SIZE], struct cliente *clienteComp);
 
 
 
@@ -188,8 +189,13 @@ int main ( ){
                             recibidos = recv(i,buffer,sizeof(buffer),0);
                             
                             if(recibidos > 0){
-                                
-                                if(strcmp(buffer,"SALIR\n") == 0){
+                                for(int j=0;j<numClientes;j++){
+                                    if(clients[j].socket==i){
+                                        comprobarEstado(buffer, &clients[j]);
+                                    }
+                                }
+                                //A función comprobar estado
+                                /*if(strcmp(buffer,"SALIR\n") == 0){
                                     salirCliente(i,&readfds,&numClientes,clients);  
                                 }
                                 
@@ -262,6 +268,7 @@ int main ( ){
 
                                     
                                 }
+                                */
                                                                 
                                 
                             }
@@ -315,4 +322,20 @@ void manejador (int signum){
     signal(SIGINT,manejador);
     
     //Implementar lo que se desee realizar cuando ocurra la excepción de ctrl+c en el servidor
+}
+
+void comprobarEstado(char cadena[MSG_SIZE], struct cliente *clienteComp){
+    printf("Cadena %s", cadena);
+    char *comando=strtok(cadena, " ");
+
+    if(strcmp("USUARIO", comando)==0){
+        printf("%i", clienteComp->estado);
+        if(clienteComp->estado==0){
+            comando=strtok(NULL,"\n");
+            printf("%s", comando);
+        }
+    }
+    
+
+
 }
