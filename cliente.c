@@ -8,13 +8,15 @@
 #include <unistd.h>
 #include <time.h>
 #include <arpa/inet.h>
+#include <stdbool.h>
 
 bool user = false;
 bool password = false;
 bool playing = false;
 
 
-int main (){
+int main ( )
+{
   
 	/*---------------------------------------------------- 
 		Descriptor del socket y buffer de datos                
@@ -34,7 +36,7 @@ int main (){
   	sd = socket (AF_INET, SOCK_STREAM, 0);
 	if (sd == -1){
 		perror("No se puede abrir el socket cliente\n");
-    		exit (1);	
+		exit (1);	
 	}
 
    
@@ -64,20 +66,11 @@ int main (){
     FD_SET(0,&readfds);
     FD_SET(sd,&readfds);
 
-	printf("Bienvenido al juego '4 en linea'.\n");
-	printf("Una vez se haya conectado al servidor introduzca:\n");
-	printf("\tPara registrarse en la aplicación por primera vez: \n");
-	printf("\t\tREGISTRO -u suNombre -p suContraseña\n");
-	printf("\tPara iniciar sesión: \n");
-	printf("\t\tUSUARIO usuario\n");
-		
-
+    
 	/* ------------------------------------------------------------------
 		Se transmite la información
 	-------------------------------------------------------------------*/
 	do{
-
-
         auxfds = readfds;
         salida = select(sd+1,&auxfds,NULL,NULL,NULL);
         
@@ -89,7 +82,7 @@ int main (){
             
             printf("\n%s\n",buffer);
             
-			if(strcmp(buffer, "+Ok. Usuario correcto\n") == 0){
+            if(strcmp(buffer, "+Ok. Usuario correcto\n") == 0){
 				user = true;
 				printf("Introduzca ahora su contraseña asi:\n\tPASSWORD password\n");
 			}
@@ -101,7 +94,7 @@ int main (){
 
 			if(strcmp(buffer, "+Ok. Usuario validado\n") == 0){
 				password = true;
-				clear();
+				//clear();
 				printf("Para empezar a jugar introduzca:\n");
 				printf("\tINICIAR-PARTIDA\n");
 				printf("Para salir introduzca:\n");
@@ -120,41 +113,24 @@ int main (){
             if(strcmp(buffer,"-Err. Desconectado por el servidor\n") == 0){
                 fin =1;
 			}
-
-			// if(strcmp(buffer, "+Ok. Empieza la partida.", strlen("+Ok. Empieza la partida.")) == 0){
-			// 	playing = true;
-			// 	/********************************************************/
-			// 	/*						Completar						*/
-			// 	/********************************************************/
-			// 	if(myTurn == true){
-			// 		printf("+Ok. Turno de partida.\n");
-			// 	}
-			// 	else if(myTurn == false){
-			// 		printf("Ok. Turno del otro jugador.\n");
-			// 	}
-			// }
             
         }
         else{
             
             //He introducido información por teclado
-           	if(FD_ISSET(0,&auxfds)){
-
-            	bzero(buffer,sizeof(buffer));
+            if(FD_ISSET(0,&auxfds)){
+                bzero(buffer,sizeof(buffer));
                 
-            	fgets(buffer,sizeof(buffer),stdin);
+                fgets(buffer,sizeof(buffer),stdin);
                 
-				send(sd, buffer, sizeof(buffer), 0);
-
-				/*
-        		if(strcmp(buffer,"SALIR\n") == 0){
-                	fin = 1;
-        		}*/
+                if(strcmp(buffer,"SALIR\n") == 0){
+                        fin = 1;
                 
+                }
+                
+                send(sd,buffer,sizeof(buffer),0);
             }
-             
-        }
-        		
+        }		
     }while(fin == 0);
 		
     close(sd);
@@ -162,3 +138,24 @@ int main (){
     return 0;
 		
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

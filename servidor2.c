@@ -11,12 +11,15 @@
 #include <arpa/inet.h>
 
 #include "struct4.h"
-
 #include "AuxiliaryFunctions.c"
+#include "Tablero.c"
 
 
 #define MSG_SIZE 200
 #define MAX_CLIENTS 30
+
+// Matriz de 6 filas, 7 colimnas y 10 tableros.
+char matriz[6][7][10];
 
 
 /*
@@ -38,9 +41,10 @@ int main ( ){
 	char buffer[MSG_SIZE];
 	socklen_t from_len;
     fd_set readfds, auxfds;
-    struct cliente clients[MAX_CLIENTS];
     int salida;
+    struct cliente clients[MAX_CLIENTS];
     int numClientes = 0;
+    int numPartidas = 0;
     //contadores
     int i,j,k;
 	int recibidos;
@@ -116,10 +120,10 @@ int main ( ){
             
             if(salida > 0){
                 
-                //Buscando el socket que estableció la comunicación
+                // Buscamos el socket por el que se ha establecido la comunicación
                 for(i=0; i<FD_SETSIZE; i++){
                     
-                    // Si encontramos el Socket
+                    // Si encontramos el socket
                     if(FD_ISSET(i, &auxfds)) {
                         
                         // El usuario es nuevo
@@ -129,21 +133,18 @@ int main ( ){
                                 perror("Error aceptando peticiones");
                             }
                             else{
-
                                 if(numClientes < MAX_CLIENTS){
                                     clients[numClientes].socket = new_sd;
                                     clients[numClientes].estado = 0;
                                     numClientes++;
 
                                     FD_SET(new_sd,&readfds);
-
-                                    bzero(buffer, sizeof(buffer));
-                                    strcpy(buffer, "+Ok. Usuario conectado.\n");
+                                
+                                    strcpy(buffer, "+Ok. Bienvenido al sistema.\n");
                                 
                                     send(new_sd,buffer,sizeof(buffer),0);
                                 }
-                                else
-                                {
+                                else{
                                     bzero(buffer,sizeof(buffer));
                                     strcpy(buffer,"-Err. Demasiados clientes conectados\n");
                                     send(new_sd,buffer,sizeof(buffer),0);
@@ -155,8 +156,7 @@ int main ( ){
                             
                         }
                         
-                        
-                        // Si se ha introducido información de teclado
+                        // Si se ha introducido informacion por teclado
                         else if (i == 0){
 
                             bzero(buffer, sizeof(buffer));
@@ -167,8 +167,8 @@ int main ( ){
                              
                                 for (j = 0; j < numClientes; j++){
                                     bzero(buffer, sizeof(buffer));
-                                    strcpy(buffer,"Desconexión servidor\n"); 
-                                    send(clients[j].socket, buffer, sizeof(buffer), 0);
+                                    strcpy(buffer,"-Err. Desconectado por el servidor\n"); 
+                                    send(clients[j].socket, buffer, sizeof(buffer),0);
                                     close(clients[j].socket);
                                     FD_CLR(clients[j].socket,&readfds);
                                 }
@@ -180,9 +180,8 @@ int main ( ){
                             
                         } 
                         
-                        
-                        else{
 
+                        else{
                             bzero(buffer,sizeof(buffer));
                             
                             recibidos = recv(i,buffer,sizeof(buffer),0);
@@ -190,12 +189,17 @@ int main ( ){
                             if(recibidos > 0){
                                 
                                 if(strcmp(buffer,"SALIR\n") == 0){
-                                    salirCliente(i,&readfds,&numClientes,clients);  
+                                    salirCliente(i,&readfds,&numClientes, clients);
                                 }
                                 
-                                else if(strcmp(buffer, "USUARIO ", strlen("USUARIO "))== 0){
+                                else if(strncmp(buffer,"USUARIO\n", strlen("USUARIO\n")) == 0){
+                                    strcpy(buffer, "-Err. Debe introducir el nombre de usuario\n");
+                                    send(i, buffer, sizeof(buffer), 0);
+                                }
 
-                                    if(strcmp(buffer, "USUARIO \n", strlen("USUARIO \n"))== 0){
+                                else if(strncmp(buffer,"USUARIO ", strlen("USUARIO ")) == 0){
+
+                                    if(strncmp(buffer, "USUARIO \n", strlen("USUARIO \n")) == 0){
                                         strcpy(buffer, "-Err. Usuario incorecto\n");
                                         send(i, buffer, sizeof(buffer), 0);
                                     }
@@ -208,6 +212,7 @@ int main ( ){
                                         if(UserCheck(usu) == true){
                                             bzero(buffer, sizeof(buffer));
                                             strcpy(buffer, "+Ok. Usuario correcto\n");
+                                            clients[i].estado = 1;
                                             send(i, buffer, sizeof(buffer), 0);
                                         }
                                         else{   //UserCheck(usu) == false
@@ -216,13 +221,16 @@ int main ( ){
                                             send(i, buffer, sizeof(buffer), 0);
                                         }
                                     }
-
-
-                                }                            
+                                }
                                 
-                                else if(strcmp(buffer, "PASSWORD ", strlen("PASSWORD "))== 0){
+                                else if(strncmp(buffer,"PASSWORD\n", strlen("PASSWORD\n")) == 0){
+                                    strcpy(buffer, "-Err. Debe introducir el password\n");
+                                    send(i, buffer, sizeof(buffer), 0);
+                                }
 
-                                    if(strcmp(buffer, "PASSWORD \n", strlen("PASSWORD \n"))== 0){
+                                else if(strncmp(buffer, "PASSWORD ", strlen("PASSWORD "))== 0){
+
+                                    if(strncmp(buffer, "PASSWORD \n", strlen("PASSWORD \n"))== 0){
                                         strcpy(buffer, "-Err. Error en la validacion\n");
                                         send(i, buffer, sizeof(buffer), 0);
                                     }
@@ -231,10 +239,13 @@ int main ( ){
                                         pass = strtok(buffer, " ");
                                         pass = strtok(NULL, "\n");   //Hasta aqui hemos extraido la constraseña de la cadena
 
+                                        printf("Password -> [%s]\n", pass);
+
                                         //Comprobamos que el nombre existe en la base de datos
                                         if(PasswordCheck(pass) == true){
                                             bzero(buffer, sizeof(buffer));
                                             strcpy(buffer, "+Ok. Usuario validado\n");
+                                            clients[i].estado = 1;
                                             send(i, buffer, sizeof(buffer), 0);
                                         }
                                         else{   //PasswordCheck(pass) == false
@@ -243,33 +254,39 @@ int main ( ){
                                             send(i, buffer, sizeof(buffer), 0);
                                         }
                                     }
-
-
                                 }
 
-                                else{
+                                else if(strncmp(buffer, "INICIAR-PARTIDA ", strlen("INICIAR-PARTIDA")) == 0){
                                     
-                                    sprintf(identificador,"<%d>: %s",i,buffer);
-
-                                    bzero(buffer,sizeof(buffer));
-                                    strcpy(buffer,identificador);
-
-                                    printf("%s\n", buffer);
-
-                                    for(j=0; j<numClientes; j++)
-                                        if(clients[j].socket != i)
-                                            send(clients[j].socket,buffer,sizeof(buffer),0);
-
-                                    
+                                    //Primero comprobamos que hay tableros vacios
+                                    if(numPartidas < 10){
+                                        int tablero = BuscarTablero();
+                                    }
                                 }
+                                // else{
+                                    
+                                //     sprintf(identificador,"<%d>: %s",i,buffer);
+                                //     bzero(buffer,sizeof(buffer));
+
+                                //     strcpy(buffer,identificador);
+
+                                //     printf("%s\n", buffer);
+
+                                //     for(j=0; j<numClientes; j++)
+                                //         if(clients[j].socket != i)
+                                //             send(clients[j].socket,buffer,sizeof(buffer),0);
+
+                                    
+                                // }
                                                                 
                                 
                             }
                             //Si el cliente introdujo ctrl+c
-                            if(recibidos== 0){
+                            if(recibidos== 0)
+                            {
                                 printf("El socket %d, ha introducido ctrl+c\n", i);
                                 //Eliminar ese socket
-                                salirCliente(i,&readfds,&numClientes,clients);
+                                salirCliente(i,&readfds,&numClientes, clients);
                             }
                         }
                     }

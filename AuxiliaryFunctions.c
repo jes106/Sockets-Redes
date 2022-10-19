@@ -50,7 +50,7 @@ bool PasswordCheck(char * pass){
     fclose(f);
     return var;
 }
-
+/*
 int main(){
     char buffer[] = "i02dipea,123\n";
     
@@ -62,4 +62,4 @@ int main(){
     printf("%s", aux);
 
     return 0;
-}
+}*/

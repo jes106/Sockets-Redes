@@ -3,11 +3,16 @@
 
 struct cliente{
     int socket;
-    int estado; //Leyenda de estados => 0: acaba de iniciar
-                    //                    1: esperando para inicio de sesión
-                    //                    2: esperando para conexión
-                    //                    3: conectado con su adversaio
+    int estado; 
+        //Leyenda de estados => 0: Entra en el sistema
+        //                      1: Ha introducido su usuario correctamente
+        //                      2: Ha introducido su password correctamente
+        //                      3: Se encuentra a la espera de jugar
+        //                      4: Dentro de una partida
+        //                      5: 
     char username [255];
+    int socket_cont;
+    
 };
 
 #endif
