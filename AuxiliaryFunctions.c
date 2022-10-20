@@ -28,7 +28,7 @@ bool UserCheck(char * user){
     return var;
 }
 
-bool PasswordCheck(char * pass){
+bool PasswordCheck(char * pass, char user[225]){
 
     FILE *f;
     if( (f = fopen("Users.txt", "r")) == NULL ){
@@ -37,12 +37,17 @@ bool PasswordCheck(char * pass){
 
     bool var = false;
     char cadena[100];
+    char usu[255];
     char *aux;
 
     while(fgets(cadena, 100, f) != NULL){
+
         aux = strtok(cadena, ",");
+        strcpy(usu, aux);
         aux = strtok(NULL, "\n");
-        if(strcmp(aux, pass) == 0){
+        aux[strlen(aux)-1] = '\0';
+
+        if(strcmp(aux, pass) == 0 && strcmp(usu, user) == 0){
             var = true;
         }
     }
