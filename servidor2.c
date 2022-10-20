@@ -53,8 +53,12 @@ int main ( ){
 
     int on, ret;
 
-    
-    
+    /* --------------------------------------------------
+        Inicializamos las matrices
+    ---------------------------------------------------*/
+    IniciaMatrices(matriz);
+
+
 	/* --------------------------------------------------
 		Se abre el socket 
 	---------------------------------------------------*/
@@ -259,12 +263,18 @@ int main ( ){
                                 }
 
                                 else if(strncmp(buffer, "INICIAR-PARTIDA ", strlen("INICIAR-PARTIDA")) == 0){
-                                    
-                                    //Primero comprobamos que hay tableros vacios
-                                    if(numPartidas < 10){
-                                        int tablero = BuscarTablero();
-                                    }
+                                    IniciaMatrices(matriz);
+                                    ImprimeMatriz(matriz, 1);
+                                    // //Primero comprobamos que hay tableros vacios
+                                    // if(numPartidas < 10){
+                                    //     int tablero = BuscarTablero();
+                                    // }
                                 }
+                                
+                                
+                                
+                                
+                                
                                 // else{
                                     
                                 //     sprintf(identificador,"<%d>: %s",i,buffer);
