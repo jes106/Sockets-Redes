@@ -188,20 +188,9 @@ int main ( ){
                             recibidos = recv(i,buffer,sizeof(buffer),0);
                             
                             if(recibidos > 0){
-<<<<<<< HEAD
                                 
                                 if(strcmp(buffer,"SALIR\n") == 0){
                                     salirCliente(i,&readfds,&numClientes, clients);
-=======
-                                for(int j=0;j<numClientes;j++){
-                                    if(clients[j].socket==i){
-                                        comprobarEstado(buffer, &clients[j]);
-                                    }
-                                }
-                                //A función comprobar estado
-                                /*if(strcmp(buffer,"SALIR\n") == 0){
-                                    salirCliente(i,&readfds,&numClientes,clients);  
->>>>>>> 5cfdbfbe865b99885de72b42e331201e6721b57c
                                 }
                                 
                                 else if(strncmp(buffer,"USUARIO\n", strlen("USUARIO\n")) == 0){
@@ -222,9 +211,10 @@ int main ( ){
 
                                         //Comprobamos que el nombre existe en la base de datos
                                         if(UserCheck(usu) == true){
+                                            clients[i].estado = 1;
+                                            strcpy(clients[i].username,usu);
                                             bzero(buffer, sizeof(buffer));
                                             strcpy(buffer, "+Ok. Usuario correcto\n");
-                                            clients[i].estado = 1;
                                             send(i, buffer, sizeof(buffer), 0);
                                         }
                                         else{   //UserCheck(usu) == false
@@ -240,7 +230,7 @@ int main ( ){
                                     send(i, buffer, sizeof(buffer), 0);
                                 }
 
-                                else if(strncmp(buffer, "PASSWORD ", strlen("PASSWORD "))== 0){
+                                else if(strncmp(buffer,"PASSWORD ", strlen("PASSWORD ")) == 0){
 
                                     if(strncmp(buffer, "PASSWORD \n", strlen("PASSWORD \n"))== 0){
                                         strcpy(buffer, "-Err. Error en la validacion\n");
@@ -254,7 +244,7 @@ int main ( ){
                                         printf("Password -> [%s]\n", pass);
 
                                         //Comprobamos que el nombre existe en la base de datos
-                                        if(PasswordCheck(pass) == true){
+                                        if(PasswordCheck(pass, clients[i].username) == true){
                                             bzero(buffer, sizeof(buffer));
                                             strcpy(buffer, "+Ok. Usuario validado\n");
                                             clients[i].estado = 1;
