@@ -204,7 +204,8 @@ int main ( ){
 
                                 else if(strncmp(buffer,"USUARIO ", strlen("USUARIO ")) == 0){
 
-                                    if(strncmp(buffer, "USUARIO \n", strlen("USUARIO \n")) == 0){
+                                    if(clients[i].estado == 0){
+                                        if(strncmp(buffer, "USUARIO \n", strlen("USUARIO \n")) == 0){
                                         strcpy(buffer, "-Err. Usuario incorecto\n");
                                         send(i, buffer, sizeof(buffer), 0);
                                     }
@@ -227,6 +228,31 @@ int main ( ){
                                             send(i, buffer, sizeof(buffer), 0);
                                         }
                                     }
+                                    }
+
+                                    else if(clients[i].estado == 1){
+                                        bzero(buffer, sizeof(buffer));
+                                        strcpy(buffer, "-Err. Ya ha introducido su usuario.\n");
+                                        send(i, buffer, sizeof(buffer), 0);  
+                                    }
+
+                                    else if(clients[i].estado == 2){
+                                        bzero(buffer, sizeof(buffer));
+                                        strcpy(buffer, "-Err. Ya ha introducido su contraseña.\n");
+                                        send(i, buffer, sizeof(buffer), 0);  
+                                    }
+                                    
+                                    else if(clients[i].estado == 3){
+                                        bzero(buffer, sizeof(buffer));
+                                        strcpy(buffer, "-Err. Su usuario ya ha sido validado.\n");
+                                        send(i, buffer, sizeof(buffer), 0);  
+                                    }
+
+                                    else if(clients[i].estado == 4){
+                                        bzero(buffer, sizeof(buffer));
+                                        strcpy(buffer, "-Err. Se encuentra jugando una partida.\n");
+                                        send(i, buffer, sizeof(buffer), 0);  
+                                    }
                                 }
                                 
                                 else if(strncmp(buffer,"PASSWORD\n", strlen("PASSWORD\n")) == 0){
@@ -241,24 +267,51 @@ int main ( ){
                                         send(i, buffer, sizeof(buffer), 0);
                                     }
                                     else{
-                                        char *pass;
-                                        pass = strtok(buffer, " ");
-                                        pass = strtok(NULL, "\n");   //Hasta aqui hemos extraido la constraseña de la cadena
-
-                                        printf("Password -> [%s]\n", pass);
-
-                                        //Comprobamos que el nombre existe en la base de datos
-                                        if(PasswordCheck(pass, clients[i].username) == true){
+                                        else if(clients[i].estado == 0){
                                             bzero(buffer, sizeof(buffer));
-                                            strcpy(buffer, "+Ok. Usuario validado\n");
-                                            clients[i].estado = 1;
+                                            strcpy(buffer, "-Err. Debe introducir primero su usuario.\n");
                                             send(i, buffer, sizeof(buffer), 0);
                                         }
-                                        else{   //PasswordCheck(pass) == false
-                                            bzero(buffer, sizeof(buffer));
-                                            strcpy(buffer, "-Err. Error en la validacion\n");
-                                            send(i, buffer, sizeof(buffer), 0);
+                                        
+                                        else if(clients[i].estado == 1){
+                                            char *pass;
+                                            pass = strtok(buffer, " ");
+                                            pass = strtok(NULL, "\n");   //Hasta aqui hemos extraido la constraseña de la cadena
+
+                                            printf("Password -> [%s]\n", pass);
+
+                                            //Comprobamos que el nombre existe en la base de datos
+                                            if(PasswordCheck(pass, clients[i].username) == true){
+                                                bzero(buffer, sizeof(buffer));
+                                                strcpy(buffer, "+Ok. Usuario validado\n");
+                                                clients[i].estado = 1;
+                                                send(i, buffer, sizeof(buffer), 0);
+                                            }
+                                            else{   //PasswordCheck(pass) == false
+                                                bzero(buffer, sizeof(buffer));
+                                                strcpy(buffer, "-Err. Error en la validacion\n");
+                                                send(i, buffer, sizeof(buffer), 0);
+                                            }  
                                         }
+
+                                        else if(clients[i].estado == 2){
+                                            bzero(buffer, sizeof(buffer));
+                                            strcpy(buffer, "-Err. Ya ha introducido su contraseña.\n");
+                                            send(i, buffer, sizeof(buffer), 0);  
+                                        }
+                                        
+                                        else if(clients[i].estado == 3){
+                                            bzero(buffer, sizeof(buffer));
+                                            strcpy(buffer, "-Err. Su usuario ya ha sido validado.\n");
+                                            send(i, buffer, sizeof(buffer), 0);  
+                                        }
+
+                                        else if(clients[i].estado == 4){
+                                            bzero(buffer, sizeof(buffer));
+                                            strcpy(buffer, "-Err. Se encuentra jugando una partida.\n");
+                                            send(i, buffer, sizeof(buffer), 0);  
+                                        }
+                                        
                                     }
                                 }
 
