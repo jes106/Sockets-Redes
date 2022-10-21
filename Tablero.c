@@ -37,6 +37,19 @@ void ImprimeMatriz(char matriz[6][7][10], int i){
     }
 }
 
+int BuscarTablero(char matriz[6][7][10]){
+    int con = 0;
+
+    for(int i = 0; i < 10; i++){
+        for(int j = 0; j < 6; j++){
+            for(int k = 0 ; k < 7; k++){
+                if(matriz[j][k][i] == '-'){ con++;};
+            }
+        }
+        if(con == 42){ return i; }
+    }
+}
+
 
 //----------------------------------------------------------------------------------------------
 // void CreaMatriz(int matriz){
