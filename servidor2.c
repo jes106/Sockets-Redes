@@ -8,6 +8,7 @@
 #include <signal.h>
 #include <unistd.h>
 #include <time.h>
+#include <stdbool.h>
 #include <arpa/inet.h>
 
 #include "struct4.h"
@@ -141,6 +142,7 @@ int main ( ){
                                 if(numClientes < MAX_CLIENTS){
                                     clients[numClientes].socket = new_sd;
                                     clients[numClientes].estado = 0;
+                                    clients[numClientes].control = numClientes;
                                     numClientes++;
 
                                     FD_SET(new_sd,&readfds);
@@ -181,8 +183,22 @@ int main ( ){
                                 close(sd);
                                 exit(-1);                              
                             }
-                            //Mensajes que se quieran mandar a los clientes (implementar)
                             
+                            //Mensajes que se quieran mandar a los clientes (implementar)
+                            if(strcmp(buffer,"IMPRIMIR\n") == 0){
+                             
+                                for (j = 0; j < MAX_CLIENTS; j++){
+                                    if(clients[j].estado == 3 || clients[j].estado == 2 || clients[j].estado == 4){
+                                        printf("Cliente %d\n", j);
+                                        printf("\tSocket -> %d\n", clients[j].socket);
+                                        printf("\tEstado -> %d\n", clients[j].estado);
+                                        printf("\tUser -> %s\n", clients[j].username);
+                                        printf("\tControl -> %d\n", clients[j].control);
+                                        printf("\t\tSocket_con -> %d\n\n", clients[j].socket_cont);
+                                    }
+                                }
+                             
+                            }
                         } 
                         
 
@@ -267,24 +283,24 @@ int main ( ){
                                         send(i, buffer, sizeof(buffer), 0);
                                     }
                                     else{
-                                        else if(clients[i].estado == 0){
+                                        if(clients[i].estado == 0){
                                             bzero(buffer, sizeof(buffer));
                                             strcpy(buffer, "-Err. Debe introducir primero su usuario.\n");
                                             send(i, buffer, sizeof(buffer), 0);
                                         }
-                                        
+
                                         else if(clients[i].estado == 1){
                                             char *pass;
                                             pass = strtok(buffer, " ");
                                             pass = strtok(NULL, "\n");   //Hasta aqui hemos extraido la constraseña de la cadena
 
-                                            printf("Password -> [%s]\n", pass);
-
                                             //Comprobamos que el nombre existe en la base de datos
                                             if(PasswordCheck(pass, clients[i].username) == true){
                                                 bzero(buffer, sizeof(buffer));
                                                 strcpy(buffer, "+Ok. Usuario validado\n");
-                                                clients[i].estado = 1;
+                                                clients[i].estado = 2;
+                                                clients[i].socket_cont = -1;
+                                                clients[i].turno = false;
                                                 send(i, buffer, sizeof(buffer), 0);
                                             }
                                             else{   //PasswordCheck(pass) == false
@@ -316,12 +332,68 @@ int main ( ){
                                 }
 
                                 else if(strncmp(buffer, "INICIAR-PARTIDA ", strlen("INICIAR-PARTIDA")) == 0){
-                                    IniciaMatrices(matriz);
-                                    ImprimeMatriz(matriz, 1);
-                                    // //Primero comprobamos que hay tableros vacios
+                                    // IniciaMatrices(matriz);
+                                    // ImprimeMatriz(matriz, 1);
+
+                                    // Cambiamos el estado del cliente
+                                    clients[i].estado = 3;
+                                    bzero(buffer, sizeof(buffer));
+                                    strcpy(buffer, "+Ok. Esperando jugadores.\n");
+                                    send(i, buffer, sizeof(buffer), 0);
+                                    
+                                    //Primero comprobamos que hay tableros vacios
                                     // if(numPartidas < 10){
-                                    //     int tablero = BuscarTablero();
+                                    //     int tablero = BuscarTablero(matriz);
+
+                                    //     //Buscamos que ocupante esta libre para jugar
+                                    //     for(int x = 0; x < MAX_CLIENTS; x++){
+                                    //         if(clients[x].estado == 3 && i != x){
+                                    //             clients[i].socket_cont = clients[x].socket;
+                                    //             clients[x].socket_cont = clients[i].socket;
+                                    //             clients[x].tablero = tablero;
+                                    //             clients[i].tablero = tablero;
+                                    //             clients[i].estado = 4;
+                                    //             clients[x].estado = 4;
+
+                                    //             if(clients[x].turno == false){
+                                    //                 clients[i].turno = true;
+                                    //             }
+
+                                    //             bzero(buffer, sizeof(buffer));
+                                    //             strcpy(buffer, "+Ok. Empieza la partida.\n");
+                                    //             send(i, buffer, sizeof(buffer), 0);
+                                    //             printf("Control.\n");
+                                    //             send(clients[x].socket, buffer, sizeof(buffer), 0);
+
+                                    //             //  // Ahora enviamos a cada jugador de quien es el turno
+                                    //             // if(clients[i].turno == false){
+                                    //             //     bzero(buffer, sizeof(buffer));
+                                    //             //     strcpy(buffer, "+Inf. Es turno del contrincante.\n");
+                                    //             //     send(i, buffer, sizeof(buffer), 0);
+                                    //             // }else{
+                                    //             //     bzero(buffer, sizeof(buffer));
+                                    //             //     strcpy(buffer, "+Inf. Es su turno.\n");
+                                    //             //     send(i, buffer, sizeof(buffer), 0);
+                                    //             // }
+                                    //             // if(clients[x].turno == false){
+                                    //             //     bzero(buffer, sizeof(buffer));
+                                    //             //     strcpy(buffer, "+Inf. Es turno del contrincante.\n");
+                                    //             //     send(x, buffer, sizeof(buffer), 0);
+                                    //             // }else{
+                                    //             //     bzero(buffer, sizeof(buffer));
+                                    //             //     strcpy(buffer, "+Inf. Es su turno.\n");
+                                    //             //     send(x, buffer, sizeof(buffer), 0);
+                                    //             // }
+                                    //         }
+                                    //     }
                                     // }
+                                    // else{
+                                    //     bzero(buffer, sizeof(buffer));
+                                    //     strcpy(buffer, "-Err. Maximo numero de partidas en juego.\n");
+                                    //     send(i, buffer, sizeof(buffer), 0);
+                                    // }
+
+
                                 }
                                 
                                 
