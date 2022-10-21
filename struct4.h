@@ -12,7 +12,9 @@ struct cliente{
         //                      5: 
     char username [255];
     int socket_cont;
-    
+    int tablero;
+    bool turno;
+    int control;
 };
 
 #endif
