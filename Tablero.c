@@ -20,21 +20,24 @@ void IniciaMatriz(char matriz[6][7][10], int i){
     }
 }
 
-void ImprimeMatriz(char matriz[6][7][10], int i){
+char ImprimeMatriz(char matriz[6][7][10], int i, char *smatriz){
 
-    printf("|");
-    for(int x = 0; x < 7; x++){
-        printf("%d|", x+1);
-    }
-    printf("\n");
+    bzero(smatriz, sizeof(smatriz));
 
+    strcat(smatriz, "|1|2|3|4|5|6|7|\n");
+    
+    char var[2];
     for(int j = 0; j < 6; j++){
-        printf("|");
+        strcat(smatriz,"|");
         for(int k = 0; k < 7; k++){
-            printf("%c|",matriz[j][k][i]);
+            if(matriz[j][k][i] == '-'){ strcat(smatriz, "-|"); }
+            else if(matriz[j][k][i] == 'x'){ strcat(smatriz, "x|"); }
+            else if(matriz[j][k][i] == 'o'){ strcat(smatriz, "o|"); }
         }
-        printf("\n");
+        strcat(smatriz, "\n");
     }
+    
+    return *smatriz;
 }
 
 int BuscarTablero(char matriz[6][7][10]){
