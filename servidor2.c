@@ -427,7 +427,21 @@ int main ( ){
 
                                 }
                                 
-                                
+                                else if(strncmp(buffer, "COLOCAR-FICHA\n", strlen("COLOCAR-FICHA\n"))){
+                                    int cliente = -1;
+                                    for(int x = 0; x < numClientes; x++){
+                                        if(clients[x].socket == i){ cliente = x; }
+                                    }
+
+                                    if(clients[cliente].turno == true){
+                                        //Funciones
+                                    }
+                                    else{
+                                        bzero(buffer, sizeof(buffer));
+                                        strcpy(buffer, "-Err. Debe esperar su turno.\n");
+                                        send(i, buffer, sizeof(buffer), 0);
+                                    }
+                                }
                                 
                                 
                                 // else{
