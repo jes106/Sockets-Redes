@@ -55,6 +55,11 @@ bool PasswordCheck(char * pass, char user[225]){
     fclose(f);
     return var;
 }
+
+bool CheckStruct(struct cliente aux, struct cliente aux1){
+    if(aux.socket != aux1.socket){ return false; }
+    return true;
+}
 /*
 int main(){
     char buffer[] = "i02dipea,123\n";
