@@ -384,34 +384,37 @@ int main ( ){
                                                 clients[cliente].estado = 4;
                                                 clients[x].estado = 4;
 
-                                                if(clients[cliente].turno == false){
-                                                    clients[x].turno = true;
-                                                }
+                                                clients[cliente].turno = false;
+                                                clients[x].turno = true;
 
                                                 bzero(buffer, sizeof(buffer));
                                                 strcpy(buffer, "+Ok. Empieza la partida.\n");
                                                 send(i, buffer, sizeof(buffer), 0);
+                                                fflush(stdin);
+                                                bzero(buffer, sizeof(buffer));
+                                                strcpy(buffer, "+Ok. Empieza la partida.\n");
                                                 send(clients[x].socket, buffer, sizeof(buffer), 0);
 
-                                                 // Ahora enviamos a cada jugador de quien es el turno
-                                                if(clients[cliente].turno == false){
-                                                    printf(" ");
-                                                    bzero(buffer, sizeof(buffer));
-                                                    strcpy(buffer, "+Inf. Es turno del contrincante.\n");
-                                                    send(i, buffer, sizeof(buffer), 0);
 
-                                                    bzero(buffer, sizeof(buffer));
-                                                    strcpy(buffer, "+Inf. Es su turno.\n");
-                                                    send(clients[x].socket, buffer, sizeof(buffer), 0);
-                                                }else{
-                                                    bzero(buffer, sizeof(buffer));
-                                                    strcpy(buffer, "+Inf. Es su turno.\n");
-                                                    send(i, buffer, sizeof(buffer), 0);
+                                                bzero(buffer, sizeof(buffer));
+                                                char smatriz[255];
+                                                ImprimeMatriz(matriz, i, smatriz);
+                                                strcpy(buffer, smatriz);
+                                                send(i, buffer, sizeof(buffer), 0);
+                                                bzero(buffer, sizeof(buffer));
+                                                ImprimeMatriz(matriz, i, smatriz);
+                                                strcpy(buffer, smatriz);
+                                                send(clients[x].socket, buffer, sizeof(buffer), 0);
 
-                                                    bzero(buffer, sizeof(buffer));
-                                                    strcpy(buffer, "+Inf. Es turno del contrincante.\n");
-                                                    send(clients[x].socket, buffer, sizeof(buffer), 0);
-                                                }
+                                                // Ahora enviamos a cada jugador de quien es el turno
+                                                fflush(stdin);
+                                                bzero(buffer, sizeof(buffer));
+                                                strcpy(buffer, "+Inf. Es turno del contrincante.\n");
+                                                send(i, buffer, sizeof(buffer), 0);
+                                                fflush(stdin);
+                                                bzero(buffer, sizeof(buffer));
+                                                strcpy(buffer, "+Inf. Es su turno.\n");
+                                                send(clients[x].socket, buffer, sizeof(buffer), 0);
                                             }
                                         }
                                     }
