@@ -19,6 +19,8 @@
 #define MSG_SIZE 250
 #define MAX_CLIENTS 30
 
+bool sobreescribe=false;
+
 // Matriz de 6 filas, 7 colimnas y 10 tableros.
 char matriz[6][7][10];
 struct cliente clients[MAX_CLIENTS];
@@ -504,12 +506,13 @@ int main ( ){
                                                 if(j==0){
                                                     strcpy(buffer, "+Inf. La columna está llena, elija otra");
                                                     send(clients[cliente].socket, buffer, sizeof(buffer),0);
+                                                    sobreescribe=true;
                                                     break;
                                                 }
                                             }
                                         }
                                         for(int k=0;k<numClientes;k++){
-                                            if(clients[k].socket==clients[cliente].socket_cont){
+                                            if(clients[k].socket==clients[cliente].socket_cont && sobreescribe==false){
                                                 bzero(buffer,sizeof(buffer));
                                                 strcpy(buffer,"+Inf. Ahora es su turno");
                                                 send(clients[k].socket,buffer,sizeof(buffer),0);
@@ -518,6 +521,9 @@ int main ( ){
                                                 strcpy(buffer,"+Inf. Ahora es el turno de su contrincante");
                                                 send(clients[cliente].socket,buffer,sizeof(buffer),0);
                                                 clients[cliente].turno=false;
+                                            }
+                                            else if(clients[k].socket==clients[cliente].socket_cont && sobreescribe==true){
+                                                sobreescribe=false;
                                             }
                                         }
                                         ImprimeMatriz(matriz, clients[cliente].tablero, sendmatriz);
