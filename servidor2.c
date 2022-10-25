@@ -54,6 +54,7 @@ int main ( ){
     int i,j,k;
 	int recibidos;
     char identificador[MSG_SIZE];
+    int numTablero=0;
 
     int on, ret;
 
@@ -422,7 +423,8 @@ int main ( ){
                                     
                                     //Primero comprobamos que hay tableros vacios
                                     if(numPartidas < 10){
-                                        int tablero = BuscarTablero(matriz);
+                                        int tablero = numTablero;
+                                        numTablero++;
 
                                         //Buscamos que ocupante esta libre para jugar
                                         for(int x = 0; x < MAX_CLIENTS; x++){
