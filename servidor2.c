@@ -397,6 +397,7 @@ int main ( ){
                                         send(new_sd, buffer, sizeof(buffer),0);
                                         break;
                                     }
+                                    printf("Pasa a la función\n");
                                     creaUsuario(user,pass);
                                 }
 
@@ -509,7 +510,13 @@ int main ( ){
                                         }
                                         for(int k=0;k<numClientes;k++){
                                             if(clients[k].socket==clients[cliente].socket_cont){
+                                                bzero(buffer,sizeof(buffer));
+                                                strcpy(buffer,"+Inf. Ahora es su turno");
+                                                send(clients[k].socket,buffer,sizeof(buffer),0);
                                                 clients[k].turno=true;
+                                                bzero(buffer,sizeof(buffer));
+                                                strcpy(buffer,"+Inf. Ahora es el turno de su contrincante");
+                                                send(clients[cliente].socket,buffer,sizeof(buffer),0);
                                                 clients[cliente].turno=false;
                                             }
                                         }

@@ -45,7 +45,7 @@ bool PasswordCheck(char * pass, char user[225]){
         aux = strtok(cadena, ",");
         strcpy(usu, aux);
         aux = strtok(NULL, "\n");
-        aux[strlen(aux)-1] = '\0';
+        //aux[strlen(aux)-1] = '\0';
 
         if(strcmp(aux, pass) == 0 && strcmp(usu, user) == 0){
             var = true;
@@ -59,6 +59,19 @@ bool PasswordCheck(char * pass, char user[225]){
 bool CheckStruct(struct cliente aux, struct cliente aux1){
     if(aux.socket != aux1.socket){ return false; }
     return true;
+}
+
+void creaUsuario(char *user, char* pass){
+    FILE *f;
+    if((f=fopen("Users.txt", "a"))==NULL){
+        perror("+Err. Error al abrir el fichero");
+        exit(-1);
+    }
+    printf("Aquí los tenemos %s y %s\n", user, pass);
+    fprintf(f, "%s,%s\n", user,pass);
+    //fprintf(f,"%s\n", cadena);
+
+    fclose(f);
 }
 /*
 int main(){
