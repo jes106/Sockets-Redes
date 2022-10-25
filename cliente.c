@@ -81,9 +81,14 @@ int main ( )
             recv(sd,buffer,sizeof(buffer),0);
             
             printf("\n%s\n",buffer);
+
+			/*if(strcmp(buffer, "+Ok. Bienvenido al sistema.\n")==0){
+				printf("Introduzca su usuario de la forma USUARIO user: \n");
+				user=true;
+			}*/
             
             if(strcmp(buffer, "+Ok. Usuario correcto\n") == 0){
-				user = true;
+				user=true;
 				printf("Introduzca ahora su contraseña asi:\n\tPASSWORD password\n");
 			}
 

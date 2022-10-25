@@ -16,7 +16,7 @@
 #include "Tablero.c"
 
 
-#define MSG_SIZE 200
+#define MSG_SIZE 250
 #define MAX_CLIENTS 30
 
 // Matriz de 6 filas, 7 colimnas y 10 tableros.
@@ -42,6 +42,7 @@ int main ( ){
 	int sd, new_sd;
 	struct sockaddr_in sockname, from;
 	char buffer[MSG_SIZE];
+    char sendmatriz[MSG_SIZE];
 	socklen_t from_len;
     fd_set readfds, auxfds;
     int salida;
@@ -119,7 +120,7 @@ int main ( ){
 
 
     //Capturamos la señal SIGINT (Ctrl+c)
-    signal(SIGINT,manejador);
+    //signal(SIGINT,manejador);
     
 	/*-----------------------------------------------------------------------
 		El servidor acepta una petición
@@ -357,6 +358,48 @@ int main ( ){
                                     }
                                 }
 
+                                else if(strncmp(buffer, "REGISTRO ", strlen("REGISTRO"))==0){
+                                    char *comando=strtok(buffer, " ");
+                                    comando=strtok(NULL, " ");
+                                    char* user;
+                                    if(comando!=NULL){
+                                    if(strncmp(comando, "-u ", strlen("-u"))==0){
+                                        printf("Llega hasta la comprobación de usuario\n");
+                                        comando=strtok(NULL," ");
+                                        user=comando;
+                                    }
+                                    else{
+                                        bzero(buffer,sizeof(buffer));
+                                        strcpy(buffer,"+Err. No se ha introducido el nombre de usuario");
+                                        send(new_sd, buffer,sizeof(buffer),0);
+                                        break;
+                                    }
+                                    }
+
+                                    else{
+                                        bzero(buffer,sizeof(buffer));
+                                        strcpy(buffer, "+Err. Introduzca el nombre de usuario");
+                                        send(new_sd, buffer, sizeof(buffer),0);
+                                        break;
+                                    }
+
+                                    comando=strtok(NULL, " ");
+                                    char* pass;
+                                    if(comando!=NULL){
+                                    if(strncmp(comando, "-p ", strlen("-p"))==0){
+                                        comando=strtok(NULL, "\n");
+                                        pass=comando;
+                                    }
+                                    }
+                                    else{
+                                        bzero(buffer,sizeof(buffer));
+                                        strcpy(buffer, "+Err. Introduzca la contraseña del usuario");
+                                        send(new_sd, buffer, sizeof(buffer),0);
+                                        break;
+                                    }
+                                    creaUsuario(user,pass);
+                                }
+
                                 else if(strncmp(buffer, "INICIAR-PARTIDA ", strlen("INICIAR-PARTIDA")) == 0){
 
                                     int cliente = -1;
@@ -379,10 +422,12 @@ int main ( ){
                                             if(clients[x].estado == 3 && i != clients[x].socket){
                                                 clients[cliente].socket_cont = clients[x].socket;
                                                 clients[x].socket_cont = clients[cliente].socket;
+                                                clients[x].jugador=1;
                                                 clients[cliente].tablero = tablero;
                                                 clients[x].tablero = clients[cliente].tablero;
                                                 clients[cliente].estado = 4;
                                                 clients[x].estado = 4;
+                                                clients[cliente].jugador=2;
 
                                                 clients[cliente].turno = false;
                                                 clients[x].turno = true;
@@ -399,12 +444,12 @@ int main ( ){
                                                 bzero(buffer, sizeof(buffer));
                                                 char smatriz[255];
                                                 ImprimeMatriz(matriz, i, smatriz);
-                                                strcpy(buffer, smatriz);
-                                                send(i, buffer, sizeof(buffer), 0);
+                                                //strcpy(buffer, smatriz);
+                                                send(i, smatriz, sizeof(smatriz), 0);
                                                 bzero(buffer, sizeof(buffer));
                                                 ImprimeMatriz(matriz, i, smatriz);
-                                                strcpy(buffer, smatriz);
-                                                send(clients[x].socket, buffer, sizeof(buffer), 0);
+                                                //strcpy(matriz, smatriz);
+                                                send(clients[x].socket, smatriz, sizeof(smatriz), 0);
 
                                                 // Ahora enviamos a cada jugador de quien es el turno
                                                 fflush(stdin);
@@ -427,14 +472,51 @@ int main ( ){
 
                                 }
                                 
-                                else if(strncmp(buffer, "COLOCAR-FICHA\n", strlen("COLOCAR-FICHA\n"))){
+                                else if(strncmp(buffer, "COLOCAR-FICHA ", strlen("COLOCAR-FICHA "))==0){
                                     int cliente = -1;
                                     for(int x = 0; x < numClientes; x++){
                                         if(clients[x].socket == i){ cliente = x; }
                                     }
 
+                                    char* aux=strtok(buffer, " ");
+                                    char* aux2=strtok(NULL, "\n");
+                                    
+
+                                    int columna=(int) strtol(aux2, NULL, 10);
+                                    columna--;
+                                    
+
                                     if(clients[cliente].turno == true){
-                                        //Funciones
+                                        for(int j=6;j>=0;j--){
+                                            if(matriz[j][columna][clients[cliente].tablero] == '-'){
+                                              if(clients[cliente].jugador==1){
+                                                matriz[j][columna][clients[cliente].tablero]= 'o';
+                                                break;
+                                              }  
+                                              if(clients[cliente].jugador==2){
+                                                matriz[j][columna][clients[cliente].tablero]= 'x';
+                                                break;
+                                              }
+                                            }
+
+                                            else{
+                                                if(j==0){
+                                                    strcpy(buffer, "+Inf. La columna está llena, elija otra");
+                                                    send(clients[cliente].socket, buffer, sizeof(buffer),0);
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        for(int k=0;k<numClientes;k++){
+                                            if(clients[k].socket==clients[cliente].socket_cont){
+                                                clients[k].turno=true;
+                                                clients[cliente].turno=false;
+                                            }
+                                        }
+                                        ImprimeMatriz(matriz, clients[cliente].tablero, sendmatriz);
+                                        send(clients[cliente].socket, sendmatriz, sizeof(sendmatriz),0);
+                                        send(clients[cliente].socket_cont, sendmatriz, sizeof(sendmatriz),0);
+                                        
                                     }
                                     else{
                                         bzero(buffer, sizeof(buffer));

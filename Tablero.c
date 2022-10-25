@@ -22,7 +22,7 @@ void IniciaMatriz(char matriz[6][7][10], int i){
 
 char ImprimeMatriz(char matriz[6][7][10], int i, char *smatriz){
 
-    bzero(smatriz, sizeof(smatriz));
+    bzero(smatriz, sizeof(&smatriz));
 
     strcat(smatriz, "|1|2|3|4|5|6|7|\n");
     
@@ -51,7 +51,9 @@ int BuscarTablero(char matriz[6][7][10]){
         }
         if(con == 42){ return i; }
     }
+    return 0;
 }
+
 
 
 //----------------------------------------------------------------------------------------------

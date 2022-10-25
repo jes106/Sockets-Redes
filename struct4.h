@@ -15,6 +15,7 @@ struct cliente{
     int tablero;
     bool turno;
     int control;
+    int jugador;
 };
 
 #endif
