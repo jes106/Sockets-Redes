@@ -20,6 +20,7 @@
 #define MAX_CLIENTS 30
 
 bool sobreescribe=false;
+int numClientes = 0;
 
 // Matriz de 6 filas, 7 colimnas y 10 tableros.
 char matriz[6][7][10];
@@ -48,7 +49,6 @@ int main ( ){
 	socklen_t from_len;
     fd_set readfds, auxfds;
     int salida;
-    int numClientes = 0;
     int numPartidas = 0;
     //contadores
     int i,j,k;
@@ -232,7 +232,11 @@ int main ( ){
                                                     clients[z].socket_cont = -1;
                                                     clients[z].tablero = -1;
                                                     clients[z].turno = false;
+                                                    strcpy(buffer,"+Inf. Su contricante ha salido de la partida");
+                                                    send(clients[x].socket_cont, buffer,sizeof(buffer),0);
+
                                                 }
+                                                
                                             }
                                         }
                                     }
@@ -625,20 +629,11 @@ void manejador (int signum){
     signal(SIGINT,manejador);
     
     //Implementar lo que se desee realizar cuando ocurra la excepción de ctrl+c en el servidor
-}
-
-void comprobarEstado(char cadena[MSG_SIZE], struct cliente *clienteComp){
-    printf("Cadena %s", cadena);
-    char *comando=strtok(cadena, " ");
-
-    if(strcmp("USUARIO", comando)==0){
-        printf("%i", clienteComp->estado);
-        if(clienteComp->estado==0){
-            comando=strtok(NULL,"\n");
-            printf("%s", comando);
-        }
+    char buffer[MSG_SIZE];
+    strcpy(buffer,"El servidor se va a cerrar, hasta luego");
+    for(int i=0;i<numClientes;i++){
+        send(clients[i].socket,buffer,sizeof(buffer),0);
+        close(clients[i].socket);
     }
-    
-
-
+    exit(0);
 }
