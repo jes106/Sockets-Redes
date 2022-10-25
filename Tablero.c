@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <time.h>
 
+#define COL 7
+#define FIL 6
+
 void IniciaMatrices(char matriz[6][7][10]){
   for(int i = 0; i < 10; i++){
     for(int j = 0; j < 6; j++){
@@ -54,6 +57,69 @@ int BuscarTablero(char matriz[6][7][10]){
     return 0;
 }
 
+
+char ganador(char matriz[6][7][10], int tablero, char * user1, char * user2) {
+    int i,j; //Para el for, para recorrer el tablero
+    int ganador = -1; // -1: no gana nadie, 0: gana jugador 1, 1: gana jugador dos
+
+    //Comprobar si hay cuatro en línea en horizontal
+    for(i = 0; i < FIL; i++) {
+        for(j = 0; j < COL-3; j++) {
+            if (tablero[i][j][tablero]=='x' && tablero[i][j+1][tablero]=='x' && tablero[i][j+2][tablero]=='x' && tablero[i][j+3][tablero]=='x')
+                ganador = 0;
+            else if (tablero[i][j][tablero]=='o' && tablero[i][j+1][tablero]=='o' && tablero[i][j+2][tablero]=='o' && tablero[i][j+3][tablero]=='o')
+                ganador = 1;
+        }
+    }
+
+    if(ganador == -1){
+    //Comprobar si hay cuatro en línea en vertical
+        for(i = 0; i < FIL-3; i++) {
+            for(j = 0; j < COL; j++) {
+                if (tablero[i][j][tablero]=='x' && tablero[i+1][j][tablero]=='x' && tablero[i+2][j][tablero]=='x' && tablero[i+3][j][tablero]=='x')
+                    ganador = 0;
+                else if (tablero[i][j][tablero]=='o' && tablero[i+1][j][tablero]=='o' && tablero[i+2][j][tablero]=='o' && tablero[i+3][j][tablero]=='o')
+                    ganador = 1;
+            }
+        }
+    }
+
+    if(ganador == -1){
+    //Comprobar si hay cuatro en línea en diagonal 1
+        for( i = 0; i < FIL; i++) {
+            for(j = 0; j < COL; j++) {
+                if (i+3 < FIL && j+3 < COL) {
+                    if (tablero[i][j][tablero]=='x' && tablero[i+1][j+1][tablero]=='x' && tablero[i+2][j+2][tablero]=='x' && tablero[i+3][j+3][tablero]=='x')
+                        ganador = 0;
+                    else if (tablero[i][j][tablero]=='o' && tablero[i+1][j+1][tablero]=='o' && tablero[i+2][j+2][tablero]=='o' && tablero[i+3][j+3][tablero]=='o')
+                        ganador = 1;
+                }
+            }
+        }
+    }
+
+    if(ganador == -1){
+    //Comprobar si hay cuatro en línea en diagonal 2
+        for(i = 0; i < FIL; i++) {
+            for(j = 0; j < COL; j++) {
+                if (i+3 < FIL && j-3 >= 0) {
+                    if (tablero[i][j][tablero]=='x' && tablero[i+1][j-1][tablero]=='x' && tablero[i+2][j-2][tablero]=='x' && tablero[i+3][j-3][tablero]=='x')
+                        ganador=0;
+                    else if (tablero[i][j][tablero]=='o' && tablero[i+1][j-1][tablero]=='o' && tablero[i+2][j-2][tablero]=='o' && tablero[i+3][j-3][tablero]=='o')
+                        ganador=1;
+                }
+            }
+        }
+    }
+    
+    if(ganador == -1){
+        return "NULL";
+    }else if(ganador == 0){
+        return user1;
+    }else if(ganador == 1){
+        return user2;
+    }
+}
 
 
 //----------------------------------------------------------------------------------------------

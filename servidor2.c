@@ -496,13 +496,13 @@ int main ( ){
                                     
 
                                     if(clients[cliente].turno == true){
-                                        for(int j=6;j>=0;j--){
+                                        for(int j = 6; j >= 0; j--){
                                             if(matriz[j][columna][clients[cliente].tablero] == '-'){
-                                              if(clients[cliente].jugador==1){
+                                              if(clients[cliente].jugador == 1){
                                                 matriz[j][columna][clients[cliente].tablero]= 'o';
                                                 break;
                                               }  
-                                              if(clients[cliente].jugador==2){
+                                              if(clients[cliente].jugador == 2){
                                                 matriz[j][columna][clients[cliente].tablero]= 'x';
                                                 break;
                                               }
